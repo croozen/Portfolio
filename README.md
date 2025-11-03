@@ -6,7 +6,7 @@ This was an interview question years ago.  To write code that takes a phone numb
 [Project Folder](https://github.com/croozen/Portfolio/tree/main/PhoneNumberToText)
 
 ## Activity Manager
-Task Activity Manager that had a web interface for assigning out task to 1 or many individuals.  Or you could assign a task to a group that individuals would receive.  
+Task Activity Manager that had a web interface for assigning out task to 1 or many individuals.  Or you could assign a task to a group that individuals would receive.  [Project Folder](https://github.com/croozen/Portfolio/tree/main/ActivityManager)
 ### SQL - Recurring activities
 The SQL code snippets showcase how a recurrence task is created.  When a recuring task is created it creates virtual tasks which refer back to the original task.  This allows for changes to occur without managing all of the recurring task in the future.  Once a virtual task is updated, for example "it is marked completed" it hydrates a task so it can be tracked on its own.  
 ### Integration Test
@@ -14,3 +14,4 @@ The following is integration test, sharing this code makes me feel a bit vulnera
 1. JWT Bearer Tokens - Authenticating and authorizing a user through tokens.
 2. JSON Creation - There is both using Text String but also using JObject and JArray to populate a submission request
 3. Voice Tasks, Audio File Dictation - Yes the application allowed a user to message via audio, it would use Azure Cognitive services to dictate the audio into text.  This required a call check if the task was completed before it tested successfully.
+
