@@ -1,0 +1,59 @@
+﻿// We know there are Read, Create, Delete actions
+let GetAction = (EventText: string) { 
+    substring(EventText, 0, indexof(EventText, " "))
+};
+let GetDomainAddress = (EventText: string) {
+    let endString = substring(EventText, 0, indexof(EventText, "blob.core.windows.net")-1);
+    let whackIndex = indexof(endString,"//")+2;
+    substring(endString,whackIndex, strlen(endString)-whackIndex)
+};
+let GetURL = (EventText: string) {
+    let endString = substring(EventText, indexof(EventText, "http"));
+    let whackIndex = indexof(endString,"'");
+    substring(endString,0,whackIndex)
+};
+let possibleDomains = StorageArchiveLogs // Lets get all of the created videos that have a start and end date that could have weekly drops
+| extend ActionItem = GetAction(EventText)
+| where ActionItem == "Create"
+| extend DomainItem = GetDomainAddress(EventText)
+| summarize min(Timestamp), max(Timestamp), count() by DomainItem
+| project DomainItem, count_, max_Timestamp, min_Timestamp, PostingDifference = datetime_diff('day', max_Timestamp, min_Timestamp)
+| where PostingDifference >= 28  // Weekly post with 1 month there should be at least 28 days between the 1st and last post
+| order by count_ desc;
+let partialDeleteDomains = StorageArchiveLogs  // We know that there was a partial deletion from the domain of deletes
+| extend ActionItem = GetAction(EventText)
+| where ActionItem == "Delete"
+| extend DomainItem = GetDomainAddress(EventText), isPartialDel = iff(indexof(EventText, "partially removed")>0, 1,0)
+| summarize count(), sum(isPartialDel) by DomainItem
+| where sum_isPartialDel > 0
+| project PartialDeleteDomains = DomainItem, countPartialDeletes = sum_isPartialDel;
+let possibleByDeleted = partialDeleteDomains
+| join kind=inner possibleDomains on $left.PartialDeleteDomains == $right.DomainItem;
+let possibleReducedContent = StorageArchiveLogs // Lets get all the URLs that are within this domain
+| extend ActionItem = GetAction(EventText)
+| where ActionItem == "Create"
+| extend DomainItem = GetDomainAddress(EventText), ContentCreateUrl = GetURL(EventText), CreateTimestamp = Timestamp
+| where DomainItem in (possibleByDeleted | project PartialDeleteDomains);
+let almostAnswer = StorageArchiveLogs // Get the Read for those domains and only consider videos with over 1000s views
+| extend ActionItem = GetAction(EventText), DomainItem = GetDomainAddress(EventText), ContentURL = GetURL(EventText)
+| where ActionItem == "Read"
+| join kind=inner possibleReducedContent on $left.ContentURL == $right.ContentCreateUrl
+| summarize count() by ContentURL, DomainItem, CreateTimestamp
+| where count_ > 1000
+| order by DomainItem, CreateTimestamp desc, count_ asc;
+let FinalDomains = almostAnswer // This gets us the answer where there is a weekly post with over 1000 views that has deleted content.
+| summarize max_Timestamp = max(CreateTimestamp), min_Timestamp = min(CreateTimestamp), count() by DomainItem
+| project DomainItem, count_, max_Timestamp, min_Timestamp, PostingDifference = datetime_diff('day', max_Timestamp, min_Timestamp)
+| where count_ >= 4 and PostingDifference >=21;
+let FinalCreateURL = StorageArchiveLogs  // Now we need to get the URL of the original delete
+| extend ActionItem = GetAction(EventText)
+| where ActionItem == "Delete"
+| extend DomainItem = GetDomainAddress(EventText), ContentCreateUrl = GetURL(EventText)
+| where DomainItem in (FinalDomains | project DomainItem);
+StorageArchiveLogs  // Now we need to get the URL of the original delete
+| extend ActionItem = GetAction(EventText)
+| where ActionItem == "Create"
+| extend ContentURL = GetURL(EventText)
+| where ContentURL in (FinalCreateURL | project ContentCreateUrl)
+| project EventText
+
