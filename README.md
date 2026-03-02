@@ -1,6 +1,10 @@
 # Portfolio for croozen
 Portfolio of past and current work of Code Snippets and Content. Sharing past and current work.  Generally this is to share the high-level engineering experiences and less of the TPM.  For experiences in Data Pipeline and AI/ML those are referenced on my LinkedIn which can be found here -  [Chris Roozen Profile](https://www.linkedin.com/in/chrisroozen/)
 
+## Agents
+Add a listing of all Agents that I have been experimenting.  This is a playground in which I will continue to add with the intent to add many examples and build upon each, will not touch the previous examples. These will start with Agent001 and will go to Agent0XX
+[Project Folder](https://github.com/croozen/Portfolio/tree/main/Agentlisting/README.md)
+
 ## Phone Number To List of Text Strings
 This was an interview question years ago.  To write code that takes a phone number and finds all of the possible strings using the number's corresponding letters (For Example 2 => "a,b,c").  This example is to share C# Code as well work to do a recursive and non-recursive methods.
 [Project Folder](https://github.com/croozen/Portfolio/tree/main/PhoneNumberToText)
@@ -17,4 +21,5 @@ The following is integration test, sharing this code makes me feel a bit vulnera
 
 ## Kusto Example from Kusto Detective Agency - Case 5
 One of the things I have been wanting to do for a few years is to walkthrough some of the Kusto Detective Agency problems. If your not familiar with them they are [Kusto Detective](https://detective.kusto.io/).  These are fun exercises that start easy and quick to finish, by case 6 it is an Escape Room type excercise.  Key takeaways from the example.  The use of functions within Kusto to reduce code being reused.  The ability to join, filter, summarize of data.  Lastly taking minimal amount of requirements to find an elusive URL.  [Project Folder](https://github.com/croozen/Portfolio/tree/main/KustoDetective)
+
 
