@@ -1,7 +1,7 @@
 # AI Agent Project
 
 Initial Agent001 built to use OpenAI.  This is a Python-based AI Agent using Microsoft Agent Framework with support for OpenAI models.  This takes in an input to create a Haiku.  Screenshot of expected result
-![App Screenshot](image/Example001.png "Main Screen")
+![App Screenshot](Image/Example001.png "Main Screen")
 
 ## Project Structure
 
